@@ -1,10 +1,11 @@
 ﻿Lab_Subject,Room
 CE Lab,B37
-EP Lab,B42
-EC Lab,B03
-NAS Lab,B03
+EP/EC Lab,B42
+EC/EP Lab,B03
+NAS/EP Lab,B03
 EGP,WS1
 CHE Lab,B41
 EEEWS(ECE),WS3
 DS Lab,B15
 EEEWS(EEE),WS4
+
