@@ -27,14 +27,14 @@ EC-1,DEVC,M3,6,Theory
 EC-1,EP,P3,5,Theory
 EC-1,NA,EE8,5,Theory
 EC-1,CE,E1,4,Theory
-EC-1,EP Lab,P3,3,Lab
+EC-1,EP/NAS Lab,P3/EE11,3,Lab
 EC-1,CE Lab,E1,3,Lab
 EC-1,EWS,ME4,2,Theory
 EC-1,ITWS,CS6,2,Theory
 EC-1,HWYS,PD,2,Theory
 EC-1,LIB,LIB,1,Theory
 EC-1,BCME,ME10,5,Theory
-EC-1,NAS Lab,EE11,3,Lab
+EC-1,NAS/EP Lab,EE11/P3,3,Lab
 EC-2,DEVC,M3,6,Theory
 EC-2,EP,P2,5,Theory
 EC-2,NA,EE9,5,Theory
@@ -180,3 +180,4 @@ CA-5,DS Lab,CS1,3,Lab
 CA-5,EEEWS,EE13,3,Lab
 CA-5,NSS,M4,2,Theory
 CA-5,LIB,LIB,2,Theory
+
