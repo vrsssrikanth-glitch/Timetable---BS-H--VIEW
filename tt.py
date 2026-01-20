@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+AUTOSAVE_PATH = "autosave.csv"
 
 st.set_page_config(layout="wide")
 
@@ -465,6 +466,7 @@ if st.button("Download Excel"):
         df.to_excel(w, "RAW", index=False)
 
     st.success("Downloaded Timetable.xlsx")
+
 
 
 
