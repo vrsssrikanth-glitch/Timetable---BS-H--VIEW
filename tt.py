@@ -65,6 +65,16 @@ def pending_load_row(cls):
             parts.append(f"{s}: {used}/{total}")
 
     return " | ".join(parts)
+def library_overflow(day, period):
+    used = {
+        r["Class"]
+        for r in st.session_state.TT
+        if r.get("Room") == "LIBRARY"
+        and r["Day"] == day
+        and r["Period"] == period
+    }
+    return len(used) > 3
+
 
 # ==================================================
 # LOAD CSVs
@@ -450,4 +460,5 @@ with tab4:
 if st.button("Download Excel"):
     with pd.ExcelWriter("Timetable.xlsx", engine="openpyxl") as w:
         df.to_excel(w, "RAW", index=False)
+
     st.success("Downloaded Timetable.xlsx")
