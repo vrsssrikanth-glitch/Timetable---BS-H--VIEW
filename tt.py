@@ -41,8 +41,9 @@ def clean(x):
     return str(x).strip().upper()
 
 def autosave():
-    pd.DataFrame(st.session_state.TT).to_csv("autosave.csv", index=False)
-
+    df = pd.DataFrame(st.session_state.TT)
+    df.to_csv(AUTOSAVE_PATH, index=False)
+    
 def subject_progress(cls, sub):
     used = sum(
         1 for r in st.session_state.TT
@@ -466,6 +467,7 @@ if st.button("Download Excel"):
         df.to_excel(w, "RAW", index=False)
 
     st.success("Downloaded Timetable.xlsx")
+
 
 
 
