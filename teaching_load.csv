@@ -42,7 +42,7 @@ EC-2,EWS,ME8,2,Theory
 EC-2,ITWS,CS6,2,Theory
 EC-2,HWYS,PD,2,Theory
 EC-2,LIB,LIB1,1,Theory
-EC-2,BCME,LIB2,5,Theory
+EC-2,BCME,ME10,5,Theory
 EC-3,DEVC,M3,6,Theory
 EC-3,EP,P1,5,Theory
 EC-3,NA,EE8,5,Theory
@@ -175,4 +175,5 @@ CA-5,DS Lab,CS1,3,Lab
 CA-5,EEEWS (EEE),EE13,3,Lab
 CA-5,NSS,M4,2,Theory
 CA-5,LIB,LIB5,2,Theory
+
 
