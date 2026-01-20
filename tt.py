@@ -236,7 +236,10 @@ def add_entry(cls, sub, day, start):
             ]
             if not any(is_bi_lab_pair(sub, r["Subject"]) for r in existing):
                 return "Faculty clash"
+       if room == "LIBRARY" and library_overflow(day, p):
+          return "Library already used by 2 classes"
 
+    
     # ---------- HOURS ----------
     used = sum(1 for r in st.session_state.TT if r["Class"] == cls and r["Subject"] == sub)
     maxh = SUB_MAX_HOURS.get((cls, sub))
@@ -462,3 +465,4 @@ if st.button("Download Excel"):
         df.to_excel(w, "RAW", index=False)
 
     st.success("Downloaded Timetable.xlsx")
+
