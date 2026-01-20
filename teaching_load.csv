@@ -3,62 +3,57 @@ EE-1,DEVC,M4,6,Theory
 EE-1,EP,P5,5,Theory
 EE-1,ECA-I,EE7,5,Theory
 EE-1,CE,E4,4,Theory
-EE-1,EP/EC Lab,,3,Lab
 EE-1,CE Lab,E4,3,Lab
 EE-1,EWS,ME6,2,Theory
 EE-1,ITWS,IT1,2,Theory
 EE-1,HWYS,PD,2,Theory
 EE-1,LIB,LIB1,1,Theory
 EE-1,BCME,ME3,5,Theory
-EE-1,EP/EC Lab,P5/EE7,3,Lab
+EE-1,EP/EC Lab,P5/EE7,6,Lab
 EE-2,DEVC,M5,6,Theory
 EE-2,EP,P4,5,Theory
 EE-2,ECA-I,EE7,5,Theory
 EE-2,CE,E5,4,Theory
-EE-2,EP/EC Lab,,3,Lab
+EE-2,EP/EC Lab,P4/EE1,6,Lab
 EE-2,CE Lab,E5,3,Lab
 EE-2,EWS,ME7,2,Theory
 EE-2,ITWS,IT1,2,Theory
 EE-2,HWYS,PD,2,Theory
 EE-2,LIB,LIB2,1,Theory
 EE-2,BCME,ME2,5,Theory
-EE-2,EP/EC Lab,,3,Lab
 EC-1,DEVC,M3,6,Theory
 EC-1,EP,P3,5,Theory
 EC-1,NA,EE8,5,Theory
 EC-1,CE,E1,4,Theory
-EC-1,EP/NAS Lab,,3,Lab
+EC-1,EP/NAS Lab,P3/EE11,6,Lab
 EC-1,CE Lab,E1,3,Lab
 EC-1,EWS,ME4,2,Theory
 EC-1,ITWS,CS6,2,Theory
 EC-1,HWYS,PD,2,Theory
 EC-1,LIB,LIB3,1,Theory
 EC-1,BCME,ME10,5,Theory
-EC-1,EP/NAS Lab,,3,Lab
 EC-2,DEVC,M3,6,Theory
 EC-2,EP,P2,5,Theory
 EC-2,NA,EE9,5,Theory
 EC-2,CE,E2,4,Theory
-EC-2,EP/NAS Lab,,3,Lab
+EC-2,EP/NAS Lab,P2/EE2,6,Lab
 EC-2,CE Lab,E2,3,Lab
 EC-2,EWS,ME8,2,Theory
 EC-2,ITWS,CS6,2,Theory
 EC-2,HWYS,PD,2,Theory
 EC-2,LIB,LIB1,1,Theory
 EC-2,BCME,LIB2,5,Theory
-EC-2,EP/NAS Lab,LIB3,3,Lab
 EC-3,DEVC,M3,6,Theory
 EC-3,EP,P1,5,Theory
 EC-3,NA,EE8,5,Theory
 EC-3,CE,E3,4,Theory
-EC-3,EP/NAS Lab,,3,Lab
+EC-3,EP/NAS Lab,P1/EE11,6,Lab
 EC-3,CE Lab,E3,3,Lab
 EC-3,EWS,ME9,2,Theory
 EC-3,ITWS,CS6,2,Theory
 EC-3,HWYS,PD,2,Theory
 EC-3,LIB,LIB2,1,Theory
 EC-3,BCME,ME1,5,Theory
-EC-3,EP/NAS Lab,P1/EE11,3,Lab
 CS-1,DEVC,M7,6,Theory
 CS-1,DS,CS1,6,Theory
 CS-1,CHE,C2,6,Theory
@@ -180,3 +175,4 @@ CA-5,DS Lab,CS1,3,Lab
 CA-5,EEEWS (EEE),EE13,3,Lab
 CA-5,NSS,M4,2,Theory
 CA-5,LIB,LIB5,2,Theory
+
