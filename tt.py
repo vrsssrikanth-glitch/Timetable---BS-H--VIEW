@@ -204,13 +204,13 @@ def get_theory_room(cls, day, start, dur):
 # ==================================================
 # ADD ENTRY (HUMAN CONTROLLED)
 # ==================================================
-#def add_entry(cls, sub, day, start):
-#    fac = SUB_FAC.get((cls, sub), "NA")
-#
- #   dur = 3 if sub.endswith("LAB") else 2 if sub in TWO_PERIOD_SUBS else 1
-  #  if start + dur - 1 > 7:
-   #     return "Invalid period span"
-#
+def add_entry(cls, sub, day, start):
+    fac = SUB_FAC.get((cls, sub), "NA")
+
+    dur = 3 if sub.endswith("LAB") else 2 if sub in TWO_PERIOD_SUBS else 1
+    if start + dur - 1 > 7:
+       return "Invalid period span"
+
     # ---------- ROOM ----------
     if sub.endswith("LAB"):
         room = LAB_ROOMS.get(sub)
@@ -467,6 +467,7 @@ if st.button("Download Excel"):
         df.to_excel(w, "RAW", index=False)
 
     st.success("Downloaded Timetable.xlsx")
+
 
 
 
