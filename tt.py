@@ -405,68 +405,68 @@ with tab3:
     )
 
 #with tab4:
-    st.subheader("Theory Room Planning")
+    #st.subheader("Theory Room Planning")
 
     # ---------- selectors ----------
-    mirror_cls = st.radio(
-        "Select Class (Theory Only)",
-        CLASSES,
-        horizontal=True
-    )
+    #mirror_cls = st.radio(
+     #   "Select Class (Theory Only)",
+      #  CLASSES,
+       # horizontal=True
+    #)
 
-    room = st.radio(
-        "Select Room (Primary Rooms)",
-        PRIMARY_ROOMS,
-        horizontal=True
-    )
+    #room = st.radio(
+     #   "Select Room (Primary Rooms)",
+      #  PRIMARY_ROOMS,
+       # horizontal=True
+    #)
 
     # ---------- show current lock ----------
-    if "CLASS_ROOM_LOCK" not in st.session_state:
-        st.session_state.CLASS_ROOM_LOCK = {}
+    #if "CLASS_ROOM_LOCK" not in st.session_state:
+     #   st.session_state.CLASS_ROOM_LOCK = {}
 
-    locked_room = st.session_state.CLASS_ROOM_LOCK.get(mirror_cls)
+    #locked_room = st.session_state.CLASS_ROOM_LOCK.get(mirror_cls)
 
-    if locked_room:
-        st.info(f"🔒 {mirror_cls} is currently locked to room {locked_room}")
-    else:
-        st.warning(f"⚠️ {mirror_cls} is not locked to any room")
+    #if locked_room:
+     #   st.info(f"🔒 {mirror_cls} is currently locked to room {locked_room}")
+    #else:
+     #   st.warning(f"⚠️ {mirror_cls} is not locked to any room")
 
     # ---------- lock / unlock controls ----------
-    c_lock, c_unlock = st.columns(2)
+#    c_lock, c_unlock = st.columns(2)
 
-    with c_lock:
-        if st.button("🔒 Lock this Class to this Room"):
-            st.session_state.CLASS_ROOM_LOCK[mirror_cls] = room
-            st.success(f"{mirror_cls} locked to {room}")
+ #   with c_lock:
+  #      if st.button("🔒 Lock this Class to this Room"):
+   #         st.session_state.CLASS_ROOM_LOCK[mirror_cls] = room
+    #        st.success(f"{mirror_cls} locked to {room}")
 
-    with c_unlock:
-        if locked_room and st.button("🔓 Unlock this Class"):
-            del st.session_state.CLASS_ROOM_LOCK[mirror_cls]
-            st.success(f"{mirror_cls} unlocked from room")
+    #with c_unlock:
+     #   if locked_room and st.button("🔓 Unlock this Class"):
+      #      del st.session_state.CLASS_ROOM_LOCK[mirror_cls]
+       #     st.success(f"{mirror_cls} unlocked from room")
 
-    st.divider()
+    #st.divider()
 
     # ---------- mirror timetable (theory only) ----------
-    mirror = df[
-        (df["Class"] == mirror_cls) &
-        (~df["Subject"].fillna("").astype(str).str.endswith("LAB")) &
-        (~df["Subject"].isin(EXCLUDE_THEORY_ROOM))
-    ]
+    #mirror = df[
+     #   (df["Class"] == mirror_cls) &
+     #   (~df["Subject"].fillna("").astype(str).str.endswith("LAB")) &
+      #  (~df["Subject"].isin(EXCLUDE_THEORY_ROOM))
+    #]
 
-    st.dataframe(
-        grid(
-            mirror,
-            lambda r: f'{r["Class"]} | {r["Subject"]} | {FAC_NAME.get(r["Faculty"])}'
-        ),
-        use_container_width=True
-    )
+    #st.dataframe(
+     #   grid(
+      #      mirror,
+       #     lambda r: f'{r["Class"]} | {r["Subject"]} | {FAC_NAME.get(r["Faculty"])}'
+        #),
+        #use_container_width=True
+    #)
 
     # ---------- policy explanation ----------
-    st.caption(
-        "📌 Policy: Locked classes always use their locked room. "
-        "Excess classes may occupy free rooms only in continuous slots "
-        "(1–2, 3–4, 1–4, 5–7)."
-    )
+    #st.caption(
+     #   "📌 Policy: Locked classes always use their locked room. "
+      #  "Excess classes may occupy free rooms only in continuous slots "
+       # "(1–2, 3–4, 1–4, 5–7)."
+    #)
 # ==================================================
 # DOWNLOAD
 # ==================================================
@@ -508,6 +508,7 @@ if st.button("Download Excel"):
 
 
     st.success("Time Table Downloaded")
+
 
 
 
