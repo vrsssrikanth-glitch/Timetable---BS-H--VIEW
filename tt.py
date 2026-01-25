@@ -5,13 +5,11 @@ import pandas as pd
 # CONFIG
 # ==================================================
 st.set_page_config(layout="wide")
-AUTOSAVE_PATH = "autosave.csv"
-
 df = pd.read_csv("autosave.csv")
 
-# -------------------------------
-# DAY NORMALIZATION (CRITICAL FIX)
-# -------------------------------
+# -------------------------
+# CLEAN DAY
+# -------------------------
 DAY_CANON = {
     "MON": "Monday", "MONDAY": "Monday",
     "TUE": "Tuesday", "TUESDAY": "Tuesday",
@@ -29,6 +27,22 @@ df["Day"] = (
     .map(DAY_CANON)
 )
 
+# 🚫 DROP BROKEN ROWS
+df = df[df["Day"].notna()]
+
+# -------------------------
+# CLEAN PERIOD
+# -------------------------
+df["Period"] = pd.to_numeric(df["Period"], errors="coerce")
+df = df[df["Period"].between(1, 7)]
+df["Period"] = df["Period"].astype(int)
+
+# -------------------------
+# CLEAN STRINGS
+# -------------------------
+for c in ["Class", "Subject", "Faculty", "Room"]:
+    if c in df.columns:
+        df[c] = df[c].fillna("").astype(str).str.strip()
 DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 PERIODS = [1,2,3,4,5,6,7]
 
@@ -102,14 +116,15 @@ for (cls, sub, day), g in df.groupby(["Class", "Subject", "Day"]):
 def grid(df, label):
     g = pd.DataFrame("", index=DAYS, columns=PERIODS)
 
-    # block invalid / rogue day values
-    df = df[df["Day"].isin(DAYS)]
+    df = df[
+        df["Day"].isin(DAYS) &
+        df["Period"].isin(PERIODS)
+    ]
 
     for _, r in df.iterrows():
         g.loc[r["Day"], r["Period"]] = label(r)
 
     return g
-
 # ==================================================
 # UI
 # ==================================================
@@ -178,5 +193,6 @@ with tab3:
         ),
         use_container_width=True
     )
+
 
 
