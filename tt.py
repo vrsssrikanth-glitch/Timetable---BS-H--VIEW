@@ -101,15 +101,11 @@ with tab1:
     cdf = df[df["Class"] == cls]
 
     st.dataframe(
-        grid(
-            cdf,
-            lambda r: (
-                f'{r["Subject"]} | {FAC_NAME.get(r["Faculty"], r["Faculty"])}'
-            )
-        ),
-        use_container_width=True,
-        hide_index=True
-    )
+    standard_grid(cdf, mode="class"),
+    use_container_width=True,
+    height=420
+)
+
 
 # -------------------------------
 # FACULTY VIEW
@@ -126,13 +122,10 @@ with tab2:
     fdf = df[df["Faculty"] == fid]
 
     st.dataframe(
-        grid(
-            fdf,
-            lambda r: f'{r["Class"]} | {r["Subject"]}'
-        ),
-        use_container_width=True,
-        hide_index=True
-    )
+    standard_grid(fdf, mode="faculty"),
+    use_container_width=True,
+    height=420
+)
 
 # -------------------------------
 # LAB VIEW
@@ -155,13 +148,10 @@ with tab3:
     ldf = df[df["Subject"].isin(set(related))]
 
     st.dataframe(
-        grid(
-            ldf,
-            lambda r: f'{r["Class"]} | {FAC_NAME.get(r["Faculty"], r["Faculty"])}'
-        ),
-        use_container_width=True,
-        hide_index=True
-    )
+    standard_grid(ldf, mode="lab"),
+    use_container_width=True,
+    height=420
+)
 
 # -------------------------------
 # ROOM VIEW
@@ -171,13 +161,10 @@ with tab4:
     rdf = df[df["Room"] == room]
 
     st.dataframe(
-        grid(
-            rdf,
-            lambda r: f'{r["Class"]} | {r["Subject"]}'
-        ),
-        use_container_width=True,
-        hide_index=True
-    )
+    standard_grid(rdf, mode="room"),
+    use_container_width=True,
+    height=420
+)
 
 # ===============================
 # DOWNLOAD
@@ -189,4 +176,5 @@ if st.button("⬇️ Download Timetable (Excel)"):
         df.to_excel(w, "RAW", index=False)
 
     st.success("✅ Timetable.xlsx downloaded")
+
 
