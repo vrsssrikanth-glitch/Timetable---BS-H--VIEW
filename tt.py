@@ -309,19 +309,19 @@ st.title("Timetable Generative System – Department of BS&H - VIEW")
         #if sugg:
          #   st.info("Suggested slots: " + ", ".join(sugg))
 
-with c2:
-    st.subheader("❌ Delete Entry")
-    with st.form("del"):
-        dcls = st.selectbox("Class", CLASSES, key="dcls")
-        dday = st.selectbox("Day", DAYS)
-        dper = st.selectbox("Period", PERIODS)
-        if st.form_submit_button("DELETE"):
-            st.session_state.TT = [
-                r for r in st.session_state.TT
-                if not (r["Class"] == dcls and r["Day"] == dday and r["Period"] == dper)
-            ]
-            autosave()
-            st.success("Deleted")
+#with c2:
+ #   st.subheader("❌ Delete Entry")
+  #  with st.form("del"):
+   #     dcls = st.selectbox("Class", CLASSES, key="dcls")
+    #    dday = st.selectbox("Day", DAYS)
+     #   dper = st.selectbox("Period", PERIODS)
+      #  if st.form_submit_button("DELETE"):
+       #     st.session_state.TT = [
+        #        r for r in st.session_state.TT
+         #       if not (r["Class"] == dcls and r["Day"] == dday and r["Period"] == dper)
+          #  ]
+           # autosave()
+            #st.success("Deleted")
 
 df = pd.DataFrame(st.session_state.TT)
 
@@ -508,6 +508,7 @@ if st.button("Download Excel"):
 
 
     st.success("Time Table Downloaded")
+
 
 
 
