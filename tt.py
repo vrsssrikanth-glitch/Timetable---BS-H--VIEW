@@ -10,7 +10,6 @@ AUTOSAVE_PATH = "autosave.csv"
 DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 PERIODS = [1,2,3,4,5,6,7]
 
-# ONLY ALLOWED CONTINUOUS ROOM BLOCKS
 CONTINUOUS_SLOTS = {
     (1, 2),
     (3, 4),
@@ -18,7 +17,6 @@ CONTINUOUS_SLOTS = {
     (5, 7)
 }
 
-# PHYSICAL ROOMS ONLY
 PHYSICAL_ROOMS = [
     "A41","A42","A45","A48",
     "B43","B44","B46","B47",
@@ -31,13 +29,12 @@ BI_LABS = [
 ]
 
 # ==================================================
-# LOAD DATA (READ ONLY)
+# LOAD DATA
 # ==================================================
 df = pd.read_csv(AUTOSAVE_PATH)
 faculty = pd.read_csv("Faculty.csv")
 labs_df = pd.read_csv("labs.csv")
 
-# Normalize text
 for d in [df, faculty, labs_df]:
     for c in d.columns:
         if d[c].dtype == object:
@@ -46,8 +43,7 @@ for d in [df, faculty, labs_df]:
 FAC_NAME = dict(zip(faculty["Faculty_ID"], faculty["Faculty_Name"]))
 
 # ==================================================
-# AUTO-FILL PHYSICAL ROOMS (CONTINUOUS BLOCKS ONLY)
-# VIEW ONLY – NO SAVE
+# AUTO-FILL PHYSICAL ROOMS (INTERNAL USE)
 # ==================================================
 df = df.copy()
 
@@ -58,60 +54,53 @@ def room_free(df, room, day, periods):
         (df["Period"].isin(periods))
     )
 
-# process subject blocks per class/day
 for (cls, sub, day), g in df.groupby(["Class", "Subject", "Day"]):
-
-    if str(sub).endswith("LAB"):
+    if sub.endswith("LAB"):
         continue
 
     periods = sorted(g["Period"].tolist())
     if not periods:
         continue
 
-    start, end = periods[0], periods[-1]
-
-    # only allowed continuous blocks
-    if (start, end) not in CONTINUOUS_SLOTS:
+    block = (periods[0], periods[-1])
+    if block not in CONTINUOUS_SLOTS:
         continue
 
-    # already has room → skip
-    if g["Room"].notna().all() and not (g["Room"] == "").any():
+    if g["Room"].notna().all() and not (g["Room"] == ""):
         continue
 
-    # assign one free physical room
     for room in PHYSICAL_ROOMS:
         if room_free(df, room, day, periods):
             df.loc[g.index, "Room"] = room
             break
 
 # ==================================================
-# GRID HELPER (FORMAT UNCHANGED)
+# GRID FORMATTER (NO NONE, CLEAN CELLS)
 # ==================================================
-def grid(data, label):
+def grid(data, formatter):
     g = pd.DataFrame("", index=DAYS, columns=PERIODS)
     for _, r in data.iterrows():
-        g.loc[r["Day"], r["Period"]] = label(r)
+        g.loc[r["Day"], r["Period"]] = formatter(r)
     return g
 
 # ==================================================
 # UI
 # ==================================================
-st.title("📘 Timetable Viewer – VIEW ONLY")
-st.info(
-    "🔒 View-only mode. "
-    "Rooms are auto-allocated only in continuous slots "
-    "(1–2, 3–4, 1–4, 5–7) using available physical rooms."
+st.title("📘 Timetable Viewer (View-Only)")
+st.caption(
+    "Clean academic views | No editing | "
+    "Unassigned classes are internally mapped to available rooms"
 )
 
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["📘 Class View", "👨‍🏫 Faculty View", "🧪 Lab View", "🏫 Room View"]
+tab1, tab2, tab3 = st.tabs(
+    ["📘 Class View", "👨‍🏫 Faculty View", "🧪 Lab View"]
 )
 
 # --------------------------------------------------
 # CLASS VIEW
 # --------------------------------------------------
 with tab1:
-    cls = st.selectbox("Class", sorted(df["Class"].unique()))
+    cls = st.selectbox("Select Class", sorted(df["Class"].unique()))
     cdf = df[df["Class"] == cls]
 
     st.dataframe(
@@ -130,7 +119,7 @@ with tab1:
 # FACULTY VIEW
 # --------------------------------------------------
 with tab2:
-    fname = st.selectbox("Faculty", sorted(FAC_NAME.values()))
+    fname = st.selectbox("Select Faculty", sorted(FAC_NAME.values()))
     fid = [k for k, v in FAC_NAME.items() if v == fname][0]
     fdf = df[df["Faculty"] == fid]
 
@@ -146,14 +135,14 @@ with tab2:
 # LAB VIEW
 # --------------------------------------------------
 with tab3:
-    lab = st.selectbox("Lab", sorted(labs_df["Lab_Subject"].unique()))
+    lab = st.selectbox("Select Lab", sorted(labs_df["Lab_Subject"].unique()))
 
-    related = [lab]
+    related = {lab}
     for pair in BI_LABS:
         if lab in pair:
-            related.extend(pair)
+            related |= pair
 
-    ldf = df[df["Subject"].isin(set(related))]
+    ldf = df[df["Subject"].isin(related)]
 
     st.dataframe(
         grid(
@@ -162,54 +151,3 @@ with tab3:
         ),
         use_container_width=True
     )
-
-# --------------------------------------------------
-# ROOM VIEW (PHYSICAL ROOMS ONLY)
-# --------------------------------------------------
-with tab4:
-    room = st.selectbox("Room", sorted(df["Room"].dropna().unique()))
-    rdf = df[df["Room"] == room]
-
-    st.dataframe(
-        grid(
-            rdf,
-            lambda r: f'{r["Class"]} | {r["Subject"]} | {FAC_NAME.get(r["Faculty"], r["Faculty"])}'
-        ),
-        use_container_width=True
-    )
-
-# ==================================================
-# ROOM UTILIZATION REPORT
-# ==================================================
-st.divider()
-st.subheader("🏫 Room Utilization Report")
-
-TOTAL_SLOTS = len(DAYS) * len(PERIODS)
-
-util = (
-    df.dropna(subset=["Room"])
-      .groupby("Room")
-      .agg(
-          Used_Slots=("Room", "count"),
-          Classes=("Class", lambda x: ", ".join(sorted(set(x))))
-      )
-      .reset_index()
-)
-
-util["Total_Slots"] = TOTAL_SLOTS
-util["Utilization_%"] = (util["Used_Slots"] / TOTAL_SLOTS * 100).round(2)
-
-st.dataframe(
-    util.sort_values("Utilization_%", ascending=False),
-    use_container_width=True
-)
-
-# ==================================================
-# DOWNLOAD
-# ==================================================
-st.divider()
-
-if st.button("⬇️ Download Excel"):
-    with pd.ExcelWriter("Timetable.xlsx", engine="openpyxl") as w:
-        df.to_excel(w, sheet_name="RAW", index=False)
-    st.success("Timetable.xlsx downloaded")
