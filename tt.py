@@ -404,7 +404,7 @@ with tab3:
         grid(ldf, lambda r: f'{r["Class"]} | {FAC_NAME.get(r["Faculty"])}')
     )
 
-with tab4:
+#with tab4:
     st.subheader("Theory Room Planning")
 
     # ---------- selectors ----------
@@ -508,6 +508,7 @@ if st.button("Download Excel"):
 
 
     st.success("Time Table Downloaded")
+
 
 
 
