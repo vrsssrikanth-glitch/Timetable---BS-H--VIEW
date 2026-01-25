@@ -249,18 +249,18 @@ def add_entry(cls, sub, day, start):
         return "Weekly hours exceeded"
 
     # ---------- INSERT ----------
-    for p in range(start, start + dur):
-        st.session_state.TT.append({
-            "Class": cls,
-            "Subject": sub,
-            "Faculty": fac,
-            "Day": day,
-            "Period": p,
-            "Room": room
-        })
+    #for p in range(start, start + dur):
+     #   st.session_state.TT.append({
+      #      "Class": cls,
+       #     "Subject": sub,
+        #    "Faculty": fac,
+         #   "Day": day,
+          #  "Period": p,
+           # "Room": room
+        #})
 
-    autosave()
-    return None
+    #autosave()
+    #return None
 
 
 # ==================================================
@@ -467,6 +467,7 @@ if st.button("Download Excel"):
         df.to_excel(w, "RAW", index=False)
 
     st.success("Downloaded Timetable.xlsx")
+
 
 
 
