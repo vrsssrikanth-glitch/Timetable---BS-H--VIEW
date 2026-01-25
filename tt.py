@@ -204,13 +204,13 @@ def get_theory_room(cls, day, start, dur):
 # ==================================================
 # ADD ENTRY (HUMAN CONTROLLED)
 # ==================================================
-def add_entry(cls, sub, day, start):
-    fac = SUB_FAC.get((cls, sub), "NA")
-
-    dur = 3 if sub.endswith("LAB") else 2 if sub in TWO_PERIOD_SUBS else 1
-    if start + dur - 1 > 7:
-        return "Invalid period span"
-
+#def add_entry(cls, sub, day, start):
+#    fac = SUB_FAC.get((cls, sub), "NA")
+#
+ #   dur = 3 if sub.endswith("LAB") else 2 if sub in TWO_PERIOD_SUBS else 1
+  #  if start + dur - 1 > 7:
+   #     return "Invalid period span"
+#
     # ---------- ROOM ----------
     if sub.endswith("LAB"):
         room = LAB_ROOMS.get(sub)
@@ -287,45 +287,45 @@ def suggest_slots(cls, sub):
 # ==================================================
 st.title("Timetable Generative System – Department of BS&H - VIEW")
 
-c1, c2 = st.columns(2)
+#c1, c2 = st.columns(2)
 
-with c1:
-    st.subheader("➕ Add Entry")
-    with st.form("add"):
-        cls = st.selectbox("Class", CLASSES)
-        subs = teaching[teaching["Class_ID"] == cls]["Subject_ID"].unique()
-        sub = st.selectbox("Subject", subs)
-        day = st.selectbox("Day", DAYS)
-        start = st.selectbox("Start Period", PERIODS)
-        if st.form_submit_button("ADD"):
-          err = add_entry(cls, sub, day, start)
-          if err:
-             st.warning(err)
-          else:
-             st.success("Added")
+#with c1:
+ #   st.subheader("➕ Add Entry")
+  #  with st.form("add"):
+   #     cls = st.selectbox("Class", CLASSES)
+    #    subs = teaching[teaching["Class_ID"] == cls]["Subject_ID"].unique()
+     #   sub = st.selectbox("Subject", subs)
+      #  day = st.selectbox("Day", DAYS)
+       # start = st.selectbox("Start Period", PERIODS)
+        #if st.form_submit_button("ADD"):
+         # err = add_entry(cls, sub, day, start)
+          #if err:
+           #  st.warning(err)
+          #else:
+           #  st.success("Added")
 
-        sugg = suggest_slots(cls, sub)
-        if sugg:
-            st.info("Suggested slots: " + ", ".join(sugg))
+        #sugg = suggest_slots(cls, sub)
+        #if sugg:
+         #   st.info("Suggested slots: " + ", ".join(sugg))
 
-with c2:
-    st.subheader("❌ Delete Entry")
-    with st.form("del"):
-        dcls = st.selectbox("Class", CLASSES, key="dcls")
-        dday = st.selectbox("Day", DAYS)
-        dper = st.selectbox("Period", PERIODS)
-        if st.form_submit_button("DELETE"):
-            st.session_state.TT = [
-                r for r in st.session_state.TT
-                if not (r["Class"] == dcls and r["Day"] == dday and r["Period"] == dper)
-            ]
-            autosave()
-            st.success("Deleted")
+#with c2:
+ #   st.subheader("❌ Delete Entry")
+  #  with st.form("del"):
+   #     dcls = st.selectbox("Class", CLASSES, key="dcls")
+    #    dday = st.selectbox("Day", DAYS)
+     #   dper = st.selectbox("Period", PERIODS)
+      #  if st.form_submit_button("DELETE"):
+       #     st.session_state.TT = [
+        #        r for r in st.session_state.TT
+         #       if not (r["Class"] == dcls and r["Day"] == dday and r["Period"] == dper)
+          #  ]
+           # autosave()
+            #st.success("Deleted")
 
-df = pd.DataFrame(st.session_state.TT)
+#df = pd.DataFrame(st.session_state.TT)
 
-st.markdown("---")
-st.info(f"📌 Pending load → {pending_load_row(cls)}")
+#st.markdown("---")
+#st.info(f"📌 Pending load → {pending_load_row(cls)}")
 
 # ==================================================
 # GRID
@@ -467,6 +467,7 @@ if st.button("Download Excel"):
         df.to_excel(w, "RAW", index=False)
 
     st.success("Downloaded Timetable.xlsx")
+
 
 
 
