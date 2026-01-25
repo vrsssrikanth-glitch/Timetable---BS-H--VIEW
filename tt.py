@@ -66,7 +66,7 @@ for (cls, sub, day), g in df.groupby(["Class", "Subject", "Day"]):
     if block not in CONTINUOUS_SLOTS:
         continue
 
-    if g["Room"].notna().all() and not (g["Room"] == ""):
+    if g["Room"].notna().all() and not (g["Room"] == "").any():
         continue
 
     for room in PHYSICAL_ROOMS:
@@ -151,3 +151,4 @@ with tab3:
         ),
         use_container_width=True
     )
+
