@@ -52,10 +52,38 @@ st.info(
 # ===============================
 # HELPERS
 # ===============================
-def grid(data, label):
-    g = pd.DataFrame("", index=DAYS, columns=PERIODS)
+def standard_grid(data, mode="class"):
+    cols = [f"P{p}" for p in PERIODS]
+    g = pd.DataFrame("", index=DAYS, columns=cols)
+
     for _, r in data.iterrows():
-        g.loc[r["Day"], r["Period"]] = label(r)
+        cell = ""
+        if mode == "class":
+            cell = (
+                f'{r["Subject"]}\n'
+                f'{r["Faculty"]}\n'
+                f'{r["Room"]}'
+            )
+        elif mode == "faculty":
+            cell = (
+                f'{r["Class"]}\n'
+                f'{r["Subject"]}\n'
+                f'{r["Room"]}'
+            )
+        elif mode == "lab":
+            cell = (
+                f'{r["Class"]}\n'
+                f'{r["Faculty"]}'
+            )
+        elif mode == "room":
+            cell = (
+                f'{r["Class"]}\n'
+                f'{r["Subject"]}\n'
+                f'{r["Faculty"]}'
+            )
+
+        g.loc[r["Day"], f'P{r["Period"]}'] = cell
+
     return g
 
 # ===============================
@@ -161,3 +189,4 @@ if st.button("⬇️ Download Timetable (Excel)"):
         df.to_excel(w, "RAW", index=False)
 
     st.success("✅ Timetable.xlsx downloaded")
+
