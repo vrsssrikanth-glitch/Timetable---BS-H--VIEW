@@ -1,144 +1,152 @@
 import streamlit as st
 import pandas as pd
-import os
 
-# ===============================
+# ==================================================
 # CONFIG
-# ===============================
+# ==================================================
 st.set_page_config(layout="wide")
 AUTOSAVE_PATH = "autosave.csv"
 
 DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 PERIODS = [1,2,3,4,5,6,7]
 
+# ONLY ALLOWED CONTINUOUS ROOM BLOCKS
+CONTINUOUS_SLOTS = {
+    (1, 2),
+    (3, 4),
+    (1, 4),
+    (5, 7)
+}
+
+# PHYSICAL ROOMS ONLY
+PHYSICAL_ROOMS = [
+    "A41","A42","A45","A48",
+    "B43","B44","B46","B47",
+    "B52","B55","B56","B57"
+]
+
 BI_LABS = [
     {"EC LAB","EP LAB"},
     {"EP LAB","NAS LAB"}
 ]
 
-EXCLUDE_THEORY_ROOM = {"ITWS","EWS","EGP"}
-
-# ===============================
+# ==================================================
 # LOAD DATA (READ ONLY)
-# ===============================
-if not os.path.exists(AUTOSAVE_PATH):
-    st.error("❌ autosave.csv not found")
-    st.stop()
-
+# ==================================================
 df = pd.read_csv(AUTOSAVE_PATH)
-
-# Safety: normalize
-for c in df.columns:
-    if df[c].dtype == object:
-        df[c] = df[c].astype(str).str.strip().str.upper()
-
-# ===============================
-# LOOKUPS (OPTIONAL)
-# ===============================
 faculty = pd.read_csv("Faculty.csv")
-faculty["Faculty_ID"] = faculty["Faculty_ID"].str.upper()
-faculty["Faculty_Name"] = faculty["Faculty_Name"].str.upper()
+labs_df = pd.read_csv("labs.csv")
+
+# Normalize text
+for d in [df, faculty, labs_df]:
+    for c in d.columns:
+        if d[c].dtype == object:
+            d[c] = d[c].astype(str).str.strip().str.upper()
 
 FAC_NAME = dict(zip(faculty["Faculty_ID"], faculty["Faculty_Name"]))
 
-# ===============================
-# UI HEADER
-# ===============================
-st.title("📘 Timetable Viewer – READ ONLY")
-st.info(
-    "🔒 View-only mode. Timetable entries cannot be added, edited, or deleted."
-)
+# ==================================================
+# AUTO-FILL PHYSICAL ROOMS (CONTINUOUS BLOCKS ONLY)
+# VIEW ONLY – NO SAVE
+# ==================================================
+df = df.copy()
 
-# ===============================
-# HELPERS
-# ===============================
-def standard_grid(data, mode="class"):
-    cols = [f"P{p}" for p in PERIODS]
-    g = pd.DataFrame("", index=DAYS, columns=cols)
+def room_free(df, room, day, periods):
+    return not any(
+        (df["Room"] == room) &
+        (df["Day"] == day) &
+        (df["Period"].isin(periods))
+    )
 
+# process subject blocks per class/day
+for (cls, sub, day), g in df.groupby(["Class", "Subject", "Day"]):
+
+    if str(sub).endswith("LAB"):
+        continue
+
+    periods = sorted(g["Period"].tolist())
+    if not periods:
+        continue
+
+    start, end = periods[0], periods[-1]
+
+    # only allowed continuous blocks
+    if (start, end) not in CONTINUOUS_SLOTS:
+        continue
+
+    # already has room → skip
+    if g["Room"].notna().all() and not (g["Room"] == "").any():
+        continue
+
+    # assign one free physical room
+    for room in PHYSICAL_ROOMS:
+        if room_free(df, room, day, periods):
+            df.loc[g.index, "Room"] = room
+            break
+
+# ==================================================
+# GRID HELPER (FORMAT UNCHANGED)
+# ==================================================
+def grid(data, label):
+    g = pd.DataFrame("", index=DAYS, columns=PERIODS)
     for _, r in data.iterrows():
-        cell = ""
-        if mode == "class":
-            cell = (
-                f'{r["Subject"]}\n'
-                f'{r["Faculty"]}\n'
-                f'{r["Room"]}'
-            )
-        elif mode == "faculty":
-            cell = (
-                f'{r["Class"]}\n'
-                f'{r["Subject"]}\n'
-                f'{r["Room"]}'
-            )
-        elif mode == "lab":
-            cell = (
-                f'{r["Class"]}\n'
-                f'{r["Faculty"]}'
-            )
-        elif mode == "room":
-            cell = (
-                f'{r["Class"]}\n'
-                f'{r["Subject"]}\n'
-                f'{r["Faculty"]}'
-            )
-
-        g.loc[r["Day"], f'P{r["Period"]}'] = cell
-
+        g.loc[r["Day"], r["Period"]] = label(r)
     return g
 
-# ===============================
-# TABS
-# ===============================
+# ==================================================
+# UI
+# ==================================================
+st.title("📘 Timetable Viewer – VIEW ONLY")
+st.info(
+    "🔒 View-only mode. "
+    "Rooms are auto-allocated only in continuous slots "
+    "(1–2, 3–4, 1–4, 5–7) using available physical rooms."
+)
+
 tab1, tab2, tab3, tab4 = st.tabs(
     ["📘 Class View", "👨‍🏫 Faculty View", "🧪 Lab View", "🏫 Room View"]
 )
 
-# -------------------------------
+# --------------------------------------------------
 # CLASS VIEW
-# -------------------------------
+# --------------------------------------------------
 with tab1:
-    cls = st.selectbox("Select Class", sorted(df["Class"].unique()))
+    cls = st.selectbox("Class", sorted(df["Class"].unique()))
     cdf = df[df["Class"] == cls]
 
     st.dataframe(
-    standard_grid(cdf, mode="class"),
-    use_container_width=True,
-    height=420
-)
-
-
-# -------------------------------
-# FACULTY VIEW
-# -------------------------------
-with tab2:
-    fname = st.selectbox(
-        "Select Faculty",
-        sorted(faculty["Faculty_Name"].unique())
+        grid(
+            cdf,
+            lambda r: (
+                f'{r["Subject"]} | CLASS COORDINATOR'
+                if r["Faculty"] == "WEEKLY_TEST_FACULTY"
+                else f'{r["Subject"]} | {FAC_NAME.get(r["Faculty"], r["Faculty"])}'
+            )
+        ),
+        use_container_width=True
     )
-    fid = faculty.loc[
-        faculty["Faculty_Name"] == fname, "Faculty_ID"
-    ].iloc[0]
 
+# --------------------------------------------------
+# FACULTY VIEW
+# --------------------------------------------------
+with tab2:
+    fname = st.selectbox("Faculty", sorted(FAC_NAME.values()))
+    fid = [k for k, v in FAC_NAME.items() if v == fname][0]
     fdf = df[df["Faculty"] == fid]
 
     st.dataframe(
-    standard_grid(fdf, mode="faculty"),
-    use_container_width=True,
-    height=420
-)
-
-# -------------------------------
-# LAB VIEW
-# -------------------------------
-with tab3:
-    labs = sorted(
-        set(
-            s for s in df["Subject"].unique()
-            if s.endswith("LAB")
-        )
+        grid(
+            fdf,
+            lambda r: f'{r["Class"]} | {r["Subject"]}'
+        ),
+        use_container_width=True
     )
 
-    lab = st.selectbox("Select Lab", labs)
+# --------------------------------------------------
+# LAB VIEW
+# --------------------------------------------------
+with tab3:
+    lab = st.selectbox("Lab", sorted(labs_df["Lab_Subject"].unique()))
 
     related = [lab]
     for pair in BI_LABS:
@@ -148,33 +156,60 @@ with tab3:
     ldf = df[df["Subject"].isin(set(related))]
 
     st.dataframe(
-    standard_grid(ldf, mode="lab"),
-    use_container_width=True,
-    height=420
-)
+        grid(
+            ldf,
+            lambda r: f'{r["Class"]} | {FAC_NAME.get(r["Faculty"], r["Faculty"])}'
+        ),
+        use_container_width=True
+    )
 
-# -------------------------------
-# ROOM VIEW
-# -------------------------------
+# --------------------------------------------------
+# ROOM VIEW (PHYSICAL ROOMS ONLY)
+# --------------------------------------------------
 with tab4:
-    room = st.selectbox("Select Room", sorted(df["Room"].dropna().unique()))
+    room = st.selectbox("Room", sorted(df["Room"].dropna().unique()))
     rdf = df[df["Room"] == room]
 
     st.dataframe(
-    standard_grid(rdf, mode="room"),
-    use_container_width=True,
-    height=420
+        grid(
+            rdf,
+            lambda r: f'{r["Class"]} | {r["Subject"]} | {FAC_NAME.get(r["Faculty"], r["Faculty"])}'
+        ),
+        use_container_width=True
+    )
+
+# ==================================================
+# ROOM UTILIZATION REPORT
+# ==================================================
+st.divider()
+st.subheader("🏫 Room Utilization Report")
+
+TOTAL_SLOTS = len(DAYS) * len(PERIODS)
+
+util = (
+    df.dropna(subset=["Room"])
+      .groupby("Room")
+      .agg(
+          Used_Slots=("Room", "count"),
+          Classes=("Class", lambda x: ", ".join(sorted(set(x))))
+      )
+      .reset_index()
 )
 
-# ===============================
+util["Total_Slots"] = TOTAL_SLOTS
+util["Utilization_%"] = (util["Used_Slots"] / TOTAL_SLOTS * 100).round(2)
+
+st.dataframe(
+    util.sort_values("Utilization_%", ascending=False),
+    use_container_width=True
+)
+
+# ==================================================
 # DOWNLOAD
-# ===============================
+# ==================================================
 st.divider()
 
-if st.button("⬇️ Download Timetable (Excel)"):
+if st.button("⬇️ Download Excel"):
     with pd.ExcelWriter("Timetable.xlsx", engine="openpyxl") as w:
-        df.to_excel(w, "RAW", index=False)
-
-    st.success("✅ Timetable.xlsx downloaded")
-
-
+        df.to_excel(w, sheet_name="RAW", index=False)
+    st.success("Timetable.xlsx downloaded")
