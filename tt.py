@@ -7,6 +7,28 @@ import pandas as pd
 st.set_page_config(layout="wide")
 AUTOSAVE_PATH = "autosave.csv"
 
+df = pd.read_csv("autosave.csv")
+
+# -------------------------------
+# DAY NORMALIZATION (CRITICAL FIX)
+# -------------------------------
+DAY_CANON = {
+    "MON": "Monday", "MONDAY": "Monday",
+    "TUE": "Tuesday", "TUESDAY": "Tuesday",
+    "WED": "Wednesday", "WEDNESDAY": "Wednesday",
+    "THU": "Thursday", "THURSDAY": "Thursday",
+    "FRI": "Friday", "FRIDAY": "Friday",
+    "SAT": "Saturday", "SATURDAY": "Saturday"
+}
+
+df["Day"] = (
+    df["Day"]
+    .astype(str)
+    .str.strip()
+    .str.upper()
+    .map(DAY_CANON)
+)
+
 DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 PERIODS = [1,2,3,4,5,6,7]
 
@@ -77,10 +99,15 @@ for (cls, sub, day), g in df.groupby(["Class", "Subject", "Day"]):
 # ==================================================
 # GRID FORMATTER (NO NONE, CLEAN CELLS)
 # ==================================================
-def grid(data, formatter):
+def grid(df, label):
     g = pd.DataFrame("", index=DAYS, columns=PERIODS)
-    for _, r in data.iterrows():
-        g.loc[r["Day"], r["Period"]] = formatter(r)
+
+    # block invalid / rogue day values
+    df = df[df["Day"].isin(DAYS)]
+
+    for _, r in df.iterrows():
+        g.loc[r["Day"], r["Period"]] = label(r)
+
     return g
 
 # ==================================================
@@ -151,4 +178,5 @@ with tab3:
         ),
         use_container_width=True
     )
+
 
