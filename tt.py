@@ -363,8 +363,8 @@ def faculty_grid_with_availability(df, faculty_id):
 # ==================================================
 # STANDARD FOUR VIEWS
 # ==================================================
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["📘 Class View", "👨‍🏫 Faculty View", "🧪 Lab View", "🏫 Room View"]
+tab1, tab2, tab3 = st.tabs(
+    ["📘 Class View", "👨‍🏫 Faculty View", "🧪 Lab View"]
 )
 
 with tab1:
@@ -508,6 +508,7 @@ if st.button("Download Excel"):
 
 
     st.success("Time Table Downloaded")
+
 
 
 
