@@ -288,26 +288,26 @@ def suggest_slots(cls, sub):
 # ==================================================
 st.title("Timetable Generative System – Department of BS&H - VIEW")
 
-c1, c2 = st.columns(2)
+#c1, c2 = st.columns(2)
 
-with c1:
-    st.subheader("➕ Add Entry")
-    with st.form("add"):
-        cls = st.selectbox("Class", CLASSES)
-        subs = teaching[teaching["Class_ID"] == cls]["Subject_ID"].unique()
-        sub = st.selectbox("Subject", subs)
-        day = st.selectbox("Day", DAYS)
-        start = st.selectbox("Start Period", PERIODS)
-        if st.form_submit_button("ADD"):
-          err = add_entry(cls, sub, day, start)
-          if err:
-             st.warning(err)
-          else:
-             st.success("Added")
+#with c1:
+ #   st.subheader("➕ Add Entry")
+  #  with st.form("add"):
+   #     cls = st.selectbox("Class", CLASSES)
+    #    subs = teaching[teaching["Class_ID"] == cls]["Subject_ID"].unique()
+     #   sub = st.selectbox("Subject", subs)
+      #  day = st.selectbox("Day", DAYS)
+       # start = st.selectbox("Start Period", PERIODS)
+        #if st.form_submit_button("ADD"):
+         # err = add_entry(cls, sub, day, start)
+          #if err:
+           #  st.warning(err)
+          #else:
+           #  st.success("Added")
 
-        sugg = suggest_slots(cls, sub)
-        if sugg:
-            st.info("Suggested slots: " + ", ".join(sugg))
+        #sugg = suggest_slots(cls, sub)
+        #if sugg:
+         #   st.info("Suggested slots: " + ", ".join(sugg))
 
 with c2:
     st.subheader("❌ Delete Entry")
@@ -508,6 +508,7 @@ if st.button("Download Excel"):
 
 
     st.success("Time Table Downloaded")
+
 
 
 
