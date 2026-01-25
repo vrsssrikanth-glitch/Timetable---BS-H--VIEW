@@ -67,7 +67,7 @@ BI_LABS = [
 # ==================================================
 # LOAD DATA
 # ==================================================
-df = pd.read_csv(autosave)
+df = pd.read_csv(AUTOSAVE_PATH)
 faculty = pd.read_csv("Faculty.csv")
 labs_df = pd.read_csv("labs.csv")
 
@@ -193,6 +193,7 @@ with tab3:
         ),
         use_container_width=True
     )
+
 
 
 
