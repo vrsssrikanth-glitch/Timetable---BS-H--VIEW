@@ -325,8 +325,8 @@ st.title("Timetable Generative System – Department of BS&H - VIEW")
 
 df = pd.DataFrame(st.session_state.TT)
 
-st.markdown("---")
-st.info(f"📌 Pending load → {pending_load_row(cls)}")
+#st.markdown("---")
+#st.info(f"📌 Pending load → {pending_load_row(cls)}")
 
 # ==================================================
 # GRID
@@ -508,6 +508,7 @@ if st.button("Download Excel"):
 
 
     st.success("Time Table Downloaded")
+
 
 
 
