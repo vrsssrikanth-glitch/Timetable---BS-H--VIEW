@@ -95,6 +95,23 @@ for df in [faculty, subjects, classes_df, teaching, fac_avail, labs_df, rooms_df
         if df[c].dtype == object:
             df[c] = df[c].apply(clean)
 
+
+# -------------------------
+# FACULTY MOBILE MAP
+# -------------------------
+FAC_MOBILE = {}
+
+mobile_col = None
+for c in faculty.columns:
+    if "MOBILE" in c.upper() or "PHONE" in c.upper():
+        mobile_col = c
+        break
+
+if mobile_col:
+    FAC_MOBILE = dict(
+        zip(faculty["Faculty_ID"], faculty[mobile_col])
+    )
+
 # ==================================================
 # LOOKUPS
 # ==================================================
@@ -383,7 +400,43 @@ with tab1:
             )
         )
     )
+    st.markdown("### 👨‍🏫 Subject-wise Faculty Details")
 
+IGNORE_SUBJECTS = {"WEEKLY TEST", "LIBRARY", "HWYS"}
+
+# filter rows for selected class
+cdf = df[df["Class"] == cls_v]
+
+# remove ignored subjects
+cdf = cdf[~cdf["Subject"].isin(IGNORE_SUBJECTS)]
+
+# unique subject–faculty pairs
+pairs = (
+    cdf[["Subject", "Faculty"]]
+    .dropna()
+    .drop_duplicates()
+)
+
+# remove invalid faculty entries
+pairs = pairs[
+    (pairs["Faculty"] != "") &
+    (pairs["Faculty"] != "NA") &
+    (pairs["Faculty"] != "WEEKLY_TEST_FACULTY")
+]
+
+if pairs.empty:
+    st.info("No subject–faculty details available for this class.")
+else:
+    rows = []
+    for _, r in pairs.iterrows():
+        fid = r["Faculty"]
+        rows.append({
+            "Subject": r["Subject"],
+            "Faculty Name": FAC_NAME.get(fid, fid),
+            "Mobile Number": FAC_MOBILE.get(fid, "Not available")
+        })
+
+    st.table(pd.DataFrame(rows))
 with tab2:
     fname = st.selectbox("Faculty", sorted(FAC_NAME.values()))
     fid = [k for k, v in FAC_NAME.items() if v == fname][0]
@@ -508,6 +561,7 @@ if st.button("Download Excel"):
 
 
     st.success("Time Table Downloaded")
+
 
 
 
